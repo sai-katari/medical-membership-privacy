@@ -4,20 +4,20 @@
     "auc": 0.7169,
     "tpr_at_0001_fpr": 0.0,
     "tpr_at_001_fpr": 0.0,
-    "accuracy": 0.8555
+    "balanced_accuracy": 0.7298
   },
   {
     "attack": "confidence",
     "auc": 0.7142,
     "tpr_at_0001_fpr": 0.0,
     "tpr_at_001_fpr": 0.0,
-    "accuracy": 0.8515
+    "balanced_accuracy": 0.7233
   },
   {
     "attack": "entropy",
     "auc": 0.7143,
     "tpr_at_0001_fpr": 0.0059,
     "tpr_at_001_fpr": 0.0181,
-    "accuracy": 0.8475
+    "balanced_accuracy": 0.7253
   }
 ]
