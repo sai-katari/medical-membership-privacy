@@ -1,0 +1,29 @@
+{
+  "train": {
+    "loss": 8.955506097636474e-05,
+    "accuracy": 1.0,
+    "macro_f1": 1.0,
+    "macro_auc": 1.0
+  },
+  "val": {
+    "loss": 0.6704978220246487,
+    "accuracy": 0.8564307078763709,
+    "macro_f1": 0.7148356485532871,
+    "macro_auc": 0.9643656540344274
+  },
+  "test": {
+    "loss": 0.647304506135403,
+    "accuracy": 0.8498753117206983,
+    "macro_f1": 0.7093701724757705,
+    "macro_auc": 0.965823253045581
+  },
+  "generalization": {
+    "accuracy_gap": 0.150125,
+    "loss_gap": 0.647215
+  },
+  "meta": {
+    "run_id": "dermamnist_resnet18_partial_seed42",
+    "best_val_auc": 0.964366,
+    "best_checkpoint_epoch": 16
+  }
+}

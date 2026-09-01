@@ -1,0 +1,29 @@
+{
+  "train": {
+    "loss": 0.4945262494093344,
+    "accuracy": 0.818752675895533,
+    "macro_f1": 0.6965094761015481,
+    "macro_auc": 0.9607814480353173
+  },
+  "val": {
+    "loss": 0.598768015563904,
+    "accuracy": 0.7856430707876371,
+    "macro_f1": 0.5907591473840856,
+    "macro_auc": 0.9358137295726164
+  },
+  "test": {
+    "loss": 0.6034188115983236,
+    "accuracy": 0.7760598503740649,
+    "macro_f1": 0.5359940290778761,
+    "macro_auc": 0.9308259093960836
+  },
+  "generalization": {
+    "accuracy_gap": 0.042693,
+    "loss_gap": 0.108893
+  },
+  "meta": {
+    "run_id": "dermamnist_resnet18_frozen_seed2026",
+    "best_val_auc": 0.935814,
+    "best_checkpoint_epoch": 18
+  }
+}

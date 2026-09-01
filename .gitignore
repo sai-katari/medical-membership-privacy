@@ -1,0 +1,27 @@
+# Model checkpoints
+checkpoints/
+*.pt
+*.pth
+*.npz
+*.parquet
+
+# Venv
+medmia/
+
+# Raw experiment data
+experiments/*/sample_outputs.json
+experiments/*/train.log
+
+# Root-level data cache only (NOT src/data/)
+/data/
+
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+.env
+
+# IDEs
+.vscode/
+.idea/
+.DS_Store
