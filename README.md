@@ -24,6 +24,15 @@ Trained ResNet-18 on DermaMNIST (224x224, MedMNIST+) under four conditions:
 - **Partial FT** - ImageNet weights, layer4 + head unfrozen (75% of params)
 - **Full FT** - ImageNet weights, all parameters unfrozen
 
+**What "frozen" means here.** In the frozen and partial regimes, parameter
+gradients are disabled for the frozen portion, but the training loop runs the
+model in train() mode, so BatchNorm running statistics in the frozen backbone
+still adapt to the training data. The frozen regime is therefore precisely
+"frozen weights with BatchNorm statistic adaptation," not a completely fixed
+feature extractor. A `freeze_bn_stats: true` config flag (off by default, to
+preserve the committed results) freezes the statistics too; comparing the two
+policies is planned future work.
+
 Each regime was run with 3 random seeds (42, 123, 2026). After training,
 I ran three membership inference attacks on every model: loss-based,
 confidence-based, and entropy-based. Attack accuracy is evaluated on a
@@ -113,11 +122,20 @@ python scripts/generate_plots.py
 Checkpoints are not included in the repo. All per-run configs, metrics,
 and attack results are under experiments/.
 
+## Follow-up study
+
+Does post-hoc temperature scaling remove this leakage? See
+[Project 2: mia-posthoc-calibration](https://github.com/sai-katari/mia-posthoc-calibration)
+— it improves calibration substantially but does not reduce membership
+leakage, and a known-T adaptive attacker recovers the original attack AUC.
+
 ## What is next
 
 - BloodMNIST and DenseNet-121 to check if the pattern holds across
   datasets and architectures
 - LiRA (Carlini et al. 2022) for a stronger attack baseline
+- Frozen-BatchNorm-statistics variant of the frozen regime (see
+  "What 'frozen' means" above)
 - Regularization experiments: label smoothing and dropout as privacy interventions
 
 ## Structure
@@ -143,3 +161,16 @@ to Overfitting. CSF, 2018.
 
 Carlini, N. et al. Membership Inference Attacks From First Principles.
 IEEE S&P, 2022.
+
+Chen, Z. and Pattabiraman, K. Overconfidence is a Dangerous Thing:
+Mitigating Membership Inference Attacks by Enforcing Less Confident
+Prediction. NDSS, 2024.
+
+## Author
+
+Sai Katari — M.S. in Computer Science, University of Kansas.
+GitHub: [sai-katari](https://github.com/sai-katari)
+
+## License
+
+MIT — see [LICENSE](LICENSE).

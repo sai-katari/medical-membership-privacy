@@ -28,8 +28,16 @@ def train(
     best_val_auc = -float("inf")
     history: list[dict] = []
 
+    freeze_bn = config.get("freeze_bn_stats", False)
+
     for epoch in range(1, config["max_epochs"] + 1):
         model.train()
+        if freeze_bn:
+            # Keep BatchNorm running statistics fixed (see README:
+            # "What 'frozen' means"). Off by default to preserve the
+            # committed results, which were produced without it.
+            from src.models.resnet import freeze_bn_running_stats
+            freeze_bn_running_stats(model)
         epoch_loss, epoch_correct, epoch_total = 0.0, 0, 0
 
         pbar = tqdm(loaders["train"], desc=f"E{epoch:03d}", leave=False, dynamic_ncols=True)

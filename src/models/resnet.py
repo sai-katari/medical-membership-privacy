@@ -56,6 +56,19 @@ def get_parameter_groups(model: nn.Module, regime: str, config: dict) -> list:
     raise ValueError(f"Unknown regime: {regime}")
 
 
+def freeze_bn_running_stats(model: nn.Module) -> None:
+    """Put all BatchNorm layers in eval mode so running stats stop updating.
+
+    Freezing parameters via requires_grad=False does NOT stop BatchNorm
+    running_mean/running_var from adapting to the training data while the
+    model is in train() mode. Call this after model.train() each epoch for
+    a completely fixed feature extractor. See README ("What 'frozen' means").
+    """
+    for module in model.modules():
+        if isinstance(module, nn.modules.batchnorm._BatchNorm):
+            module.eval()
+
+
 def print_trainable_summary(model: nn.Module, regime: str) -> None:
     total     = sum(p.numel() for p in model.parameters())
     trainable = sum(p.numel() for p in model.parameters() if p.requires_grad)
