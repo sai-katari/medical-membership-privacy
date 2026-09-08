@@ -34,17 +34,21 @@ def extract_split(model, loader, device, membership_label):
                 t      = targets[i].item()
                 p_vec  = probs[i].numpy()
                 pred   = preds[i].item()
+                p_vec_f64 = p_vec.astype(np.float64)
+                p_vec_f64 /= p_vec_f64.sum()
+                tiny = np.finfo(np.float64).tiny
+                log_p = np.log(np.clip(p_vec_f64, tiny, 1.0))
                 p_true = float(p_vec[t])
-                loss   = float(-np.log(p_true + 1e-12))
-                entropy = float(-(p_vec * np.log(p_vec + 1e-12)).sum())
+                loss   = float(-log_p[t])
+                entropy = float(-(p_vec_f64 * log_p).sum())
 
                 records.append({
                     "sample_idx": idx,
                     "true_class": t,
                     "pred_class": pred,
                     "prob_vector": p_vec.tolist(),
-                    "p_true":     p_true,
-                    "max_conf":   float(p_vec.max()),
+                    "p_true":     float(p_vec_f64[t]),
+                    "max_conf":   float(p_vec_f64.max()),
                     "loss":       loss,
                     "entropy":    entropy,
                     "correct":    int(pred == t),
