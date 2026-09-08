@@ -39,6 +39,12 @@ confidence-based, and entropy-based. Attack accuracy is evaluated on a
 balanced member/non-member subset using balanced accuracy to avoid the
 class imbalance issue (7007 members vs 2005 non-members).
 
+The loss-based attacker is assumed to know the true class label. All attacks
+receive the complete float32 probability vector produced by the model. Before
+computing attack scores, probability vectors are converted to float64 and
+renormalized. This reduces artificial ties caused by float32 softmax
+saturation while preserving the probability-output black-box threat model.
+
 ## Results
 
 | Regime | Test AUROC | Accuracy Gap | Loss MIA AUC | Entropy TPR @ 1% FPR |
@@ -46,13 +52,13 @@ class imbalance issue (7007 members vs 2005 non-members).
 | Frozen | 0.930 +/- 0.000 | 0.046 +/- 0.003 | 0.516 +/- 0.001 | 0.010 +/- 0.001 |
 | Scratch | 0.931 +/- 0.004 | 0.062 +/- 0.031 | 0.525 +/- 0.013 | 0.010 +/- 0.001 |
 | Partial FT | 0.967 +/- 0.001 | 0.148 +/- 0.002 | 0.679 +/- 0.045 | 0.015 +/- 0.003 |
-| Full FT | 0.974 +/- 0.004 | 0.128 +/- 0.003 | 0.698 +/- 0.002 | 0.034 +/- 0.003 |
+| Full FT | 0.974 +/- 0.004 | 0.128 +/- 0.003 | 0.699 +/- 0.002 | 0.034 +/- 0.003 |
 
 Mean +/- sample SD across 3 seeds.
 
 ![MIA AUC by regime](plots/plot1_mia_auc_by_regime.png)
 
-![Loss gap vs MIA AUC — all 12 runs](plots/plot3_lossgap_vs_mia.png)
+![Loss gap vs MIA AUC -- all 12 runs](plots/plot3_lossgap_vs_mia.png)
 
 Across the four training strategies, stronger adaptation of pretrained
 features improved classification performance but was accompanied by greater
@@ -61,7 +67,7 @@ vulnerability to the simple membership attacks evaluated here.
 Frozen feature extraction remained near chance under the simple membership
 attacks evaluated here, with loss-MIA AUROC of 0.516 +/- 0.001. Partial and
 full fine-tuning increased loss-MIA AUROC to 0.679 +/- 0.045 and
-0.698 +/- 0.002, respectively.
+0.699 +/- 0.002, respectively.
 
 Across the 12 trained models, the train-test loss gap was strongly associated
 with loss-based MIA AUROC (Spearman rho=0.965, p=3.88e-07). The accuracy
@@ -74,18 +80,22 @@ Partial FT also exhibits the largest accuracy generalization gap of any
 regime, consistent with the strong association observed between generalization
 gap and membership leakage.
 
-Interestingly, entropy achieves higher TPR at 1% FPR on fully fine-tuned
-models than loss or maximum-confidence attacks. For full FT, entropy reached
-approximately 3.4% TPR at 1% FPR while loss and confidence attacks produced
-0% at the same operating point. This suggests that the full predictive
-distribution may contain membership signal not captured by a single confidence
-score, motivating further investigation with stronger attacks such as LiRA.
+At 1% FPR, loss and entropy attacks produce comparable TPR for full FT
+(loss: 3.4% +/- 0.3%, entropy: 3.4% +/- 0.3%). An earlier version of this
+analysis reported 0% TPR for loss at that threshold, which was an artifact of
+float32 softmax saturation creating tied loss scores across roughly 1,000 to
+1,700 samples per run. Converting the stored probability vectors to float64
+and renormalizing before computing scores resolves the ties. Loss AUROC
+changed from 0.698 to 0.699, confirming that overall ranking was not
+materially affected. The corrected results remove the apparent gap between
+loss and entropy at low FPR; both attacks reflect the same membership signal
+in the full predictive distribution.
 
 ## Limitations
 
-This study currently evaluates one biomedical dataset and one architecture,
-so the observed trends should not be assumed to generalize across medical
-imaging tasks or model families.
+This study evaluates one biomedical dataset and one architecture, so the
+observed trends should not be assumed to generalize across medical imaging
+tasks or model families.
 
 The membership attacks are limited to loss-, confidence-, and entropy-based
 methods. Stronger likelihood-ratio attacks such as LiRA remain future work.
@@ -101,6 +111,12 @@ The correlation analysis across 12 trained models is exploratory. It reflects
 repeated runs from four training regimes on the same dataset and architecture
 and should not be interpreted as evidence of a causal relationship between
 generalization gap and membership leakage.
+
+The loss-based attacker is assumed to know the true class label. All attacks
+receive the complete float32 probability vector produced by the model. Before
+computing attack scores, probability vectors are converted to float64 and
+renormalized. This reduces artificial ties caused by float32 softmax
+saturation while preserving the probability-output black-box threat model.
 
 ## Reproducing
 
@@ -125,8 +141,8 @@ and attack results are under experiments/.
 ## Follow-up study
 
 Does post-hoc temperature scaling remove this leakage? See
-[Project 2: mia-posthoc-calibration](https://github.com/sai-katari/mia-posthoc-calibration)
-— it improves calibration substantially but does not reduce membership
+[Project 2: mia-posthoc-calibration](https://github.com/sai-katari/mia-posthoc-calibration).
+It improves calibration substantially but does not reduce membership
 leakage, and a known-T adaptive attacker recovers the original attack AUC.
 
 ## What is next
@@ -134,8 +150,7 @@ leakage, and a known-T adaptive attacker recovers the original attack AUC.
 - BloodMNIST and DenseNet-121 to check if the pattern holds across
   datasets and architectures
 - LiRA (Carlini et al. 2022) for a stronger attack baseline
-- Frozen-BatchNorm-statistics variant of the frozen regime (see
-  "What 'frozen' means" above)
+- Frozen-BatchNorm-statistics variant of the frozen regime (see above)
 - Regularization experiments: label smoothing and dropout as privacy interventions
 
 ## Structure
@@ -144,7 +159,6 @@ leakage, and a known-T adaptive attacker recovers the original attack AUC.
     scripts/        end-to-end pipeline scripts
     configs/        hyperparameter files per dataset and architecture
     experiments/    per-run configs, metrics, and attack results (12 runs)
-    results/        aggregated CSVs
     plots/          figures
     tests/          unit tests for model freezing and data loading
 
@@ -168,9 +182,9 @@ Prediction. NDSS, 2024.
 
 ## Author
 
-Sai Katari — M.S. in Computer Science, University of Kansas.
+Sai Katari -- M.S. in Computer Science, University of Kansas.
 GitHub: [sai-katari](https://github.com/sai-katari)
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT -- see [LICENSE](LICENSE).
