@@ -35,9 +35,9 @@ policies is planned future work.
 
 Each regime was run with 3 random seeds (42, 123, 2026). After training,
 I ran three membership inference attacks on every model: loss-based,
-confidence-based, and entropy-based. Attack accuracy is evaluated on a
-balanced member/non-member subset using balanced accuracy to avoid the
-class imbalance issue (7007 members vs 2005 non-members).
+confidence-based, and entropy-based. Attacks are evaluated on the full
+member/non-member pool (7007 members, 2005 non-members) using AUROC and
+TPR at fixed FPR thresholds.
 
 The loss-based attacker is assumed to know the true class label. All attacks
 receive the complete float32 probability vector produced by the model. Before
