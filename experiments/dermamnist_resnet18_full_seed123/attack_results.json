@@ -1,23 +1,23 @@
 [
   {
     "attack": "loss",
-    "auc": 0.7003,
-    "tpr_at_0001_fpr": 0.0,
-    "tpr_at_001_fpr": 0.0,
-    "balanced_accuracy": 0.6924
+    "auc": 0.701,
+    "tpr_at_0001_fpr": 0.0076,
+    "tpr_at_001_fpr": 0.0372,
+    "balanced_accuracy": 0.701
   },
   {
     "attack": "confidence",
-    "auc": 0.6978,
-    "tpr_at_0001_fpr": 0.0,
-    "tpr_at_001_fpr": 0.0,
-    "balanced_accuracy": 0.6889
+    "auc": 0.6986,
+    "tpr_at_0001_fpr": 0.0076,
+    "tpr_at_001_fpr": 0.0372,
+    "balanced_accuracy": 0.6986
   },
   {
     "attack": "entropy",
     "auc": 0.6987,
     "tpr_at_0001_fpr": 0.0077,
     "tpr_at_001_fpr": 0.037,
-    "balanced_accuracy": 0.6874
+    "balanced_accuracy": 0.6987
   }
 ]
